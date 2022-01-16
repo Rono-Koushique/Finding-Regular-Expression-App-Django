@@ -1,0 +1,1 @@
+words = re.finditer(regular_expression, text)

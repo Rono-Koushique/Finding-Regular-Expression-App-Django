@@ -1,0 +1,94 @@
+{% extends 'RegExVal/base.html' %}
+
+{% block content %}
+    <br>
+    <div class="container-fluid main-page">
+        <div class="container-fluid head-section mt-5 mb-5">
+            <center><h1 class="head-title">Regular Expression Finder</h1></center>
+        </div>
+        <div class="container-fluid form-section">
+            <form action="{% url 'regexval-home' %}" method="post">
+                {% csrf_token %}
+                <div class="row mb-3">
+                    <div class="col-4 left">
+                        <div>
+                            <label for="regularExpression" class="form-label">Regular Expression</label>
+                            <textarea class="shadow-sm form-control" id="regularExpression" name="regular-expression" rows="2">{% if default_text %}{{ regular_expression }}{% endif %}</textarea>
+                        </div>
+                    </div>
+                    <div class="col-8 right">
+                        <div>
+                            <label for="inputText" class="form-label">Input Text</label>
+                            <textarea class="shadow-sm form-control" id="inputText" 
+                            name="input-text" rows="2">{% if default_text %}{{ default_text }}{% endif %}</textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-4 left">
+                        <div class="row">
+                            <div class="col-9">
+                                <button type="submit" class="shadow-sm btn btn-primary btn-lg validate-button">Find text</button>
+                            </div>
+                            <div class="col-3 p-0">
+                                <button type="reset" class="shadow-sm reset_button" id="reset-button" name="reset-button">
+                                    <span class="button__icon">
+                                        <ion-icon class="icon" name="refresh-outline"></ion-icon>
+                                    </span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row match-count">
+                            <p>{{ match_count }} matches found</p>
+                        </div>
+                    </div>
+                    <div class="col-8 right">
+                        <div class="shadow-sm result-box" id="result-box">
+                            
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+
+    <script>
+        let btnClear = document.querySelector(".reset_button");
+        let inputs = document.querySelectorAll("textarea");
+        let result = document.querySelector(".result-box");
+        let match_count = document.querySelector(".match-count");
+        
+        for (let input of inputs) {
+            console.log(input);
+        }
+
+        btnClear.addEventListener('click', () => {
+            inputs.forEach(input => input.innerHTML = '');
+            result.innerHTML = '';
+            match_count.innerHTML = '';
+        });
+    </script>
+
+    <script>
+        const spans = {% autoescape off %}{{ spans }}{% endautoescape %};
+        var text = document.getElementById('inputText').innerHTML;
+        const len = text.length;
+
+        var colored = ""
+        var last_idx = 0;
+
+        for (const span of spans) {
+            var left = text.slice(last_idx, span[0]);
+            var middle = text.slice(span[0], span[1]);
+            
+            colored += (left+'<span style="background-color:#ffB5B5;">'+middle+'</span>');
+            
+            last_idx = span[1];
+        }
+        colored += text.slice(last_idx, len)
+        document.getElementById('result-box').innerHTML = colored;
+    </script>
+{% endblock content %}
